@@ -1,0 +1,6 @@
+[submodule "hypertune-ui"]
+	path = hypertune-ui
+	url = ./.submodule-remotes/hypertune-ui.git
+[submodule "hypertune-api"]
+	path = hypertune-api
+	url = ./.submodule-remotes/hypertune-api.git

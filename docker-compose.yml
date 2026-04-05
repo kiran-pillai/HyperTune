@@ -1,0 +1,58 @@
+services:
+  hypertune-ui:
+    build:
+      context: ./hypertune-ui
+      dockerfile: Dockerfile
+    container_name: hypertune-ui
+    env_file:
+      - ./.env
+      - ./hypertune-ui/.env
+    depends_on:
+      - hypertune-api
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./hypertune-ui:/app
+      - hypertune_ui_node_modules:/app/node_modules
+    restart: unless-stopped
+
+  hypertune-api:
+    build:
+      context: ./hypertune-api
+      dockerfile: Dockerfile
+    container_name: hypertune-api
+    env_file:
+      - ./.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/hypertune
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: hypertune
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./hypertune-api:/app
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16
+    container_name: hypertune-postgres
+    env_file:
+      - ./.env
+    environment:
+      POSTGRES_DB: hypertune
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+  hypertune_ui_node_modules:
